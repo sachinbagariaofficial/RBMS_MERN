@@ -1,13 +1,28 @@
-import logo from './logo.svg';
 import './App.css';
-
+import Header from "./components/Layout/Header.tsx"
+import Footer from './components/Layout/Footer.tsx';
+import Signup from './components/Auth/Signup.tsx';
+import Login from './components/Auth/Login.tsx';
+import AdminDashboard from './components/Dashboard/AdminDashboard.tsx';
+import ManagerDashboard from './components/Dashboard/ManagerDashboard.tsx';
+import { Route , Routes } from 'react-router-dom';
+import PrivateRoutes from './components/utils/PrivateRoutes.js';
+import Dashboard from './components/Dashboard/Dashboard.tsx';
+import 'react-toastify/dist/ReactToastify.css';
+import UserDashboard from './components/Dashboard/UserDashboard.tsx';
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-       <h1>Nameste World</h1>
-      </header>
+    
+  
+  <Routes>
+    <Route element={<PrivateRoutes/>} >
+    <Route  path='/' element={<Dashboard/>} />
+    </Route>
+    <Route  path='/login' element={<Login/>} />
+    <Route  path='/signup' element={<Signup/>} />
+  </Routes>
+ <Footer/>
     </div>
   );
 }
