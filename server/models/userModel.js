@@ -22,7 +22,10 @@ const userSchema = new mongoose.Schema({
   forgotPasswordTokenExpiry: Date,
   verifyToken: String,
   verifyTokenExpiry: Date,
-  role: { type: String,  enum: ['admin', 'manager', 'user'] ,default:"user"}
+  role: { type: String,  enum: ['admin', 'manager', 'user'] ,default:"user"},
+  department:{
+    type:String , enum:["administrator", "finance" , "maintenance" ,"public" ] , default:"public"
+  }
 });
 
 const User = mongoose.models.users || mongoose.model("users", userSchema);

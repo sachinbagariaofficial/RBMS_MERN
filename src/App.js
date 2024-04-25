@@ -10,11 +10,12 @@ import PrivateRoutes from './components/utils/PrivateRoutes.js';
 import Dashboard from './components/Dashboard/Dashboard.tsx';
 import 'react-toastify/dist/ReactToastify.css';
 import UserDashboard from './components/Dashboard/UserDashboard.tsx';
+import { UserInfoProvider } from './components/Contexts/UserInfoContext.tsx';
 function App() {
   return (
     <div className="App">
     
-  
+  <UserInfoProvider>  
   <Routes>
     <Route element={<PrivateRoutes/>} >
     <Route  path='/' element={<Dashboard/>} />
@@ -22,7 +23,7 @@ function App() {
     <Route  path='/login' element={<Login/>} />
     <Route  path='/signup' element={<Signup/>} />
   </Routes>
- <Footer/>
+ </UserInfoProvider>
     </div>
   );
 }

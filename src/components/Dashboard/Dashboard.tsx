@@ -1,17 +1,26 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from "react";
 
-import AdminDashboard from './AdminDashboard.tsx';
-import ManagerDashboard from './ManagerDashboard.tsx';
-import UserDashboard from './UserDashboard.tsx';
+import AdminDashboard from "./AdminDashboard.tsx";
+import ManagerDashboard from "./ManagerDashboard.tsx";
+import UserDashboard from "./UserDashboard.tsx";
+import { UserInfoContext } from "../Contexts/UserInfoContext.tsx";
 
-const Dashboard = () => {;
+const Dashboard = () => {
+  const { userInfoState } = useContext(UserInfoContext);
 
-const [dashboardType ,  setDashboardType] = useState<string>("admin")
-   
+  const role = userInfoState?.UserInfo?.role;
 
-  return (
- dashboardType === "admin" ? <AdminDashboard/> : <ManagerDashboard/>
-  )
-}
 
-export default Dashboard
+  switch (role) {
+    case "admin":
+      return <AdminDashboard />;
+    case "manager":
+      return <ManagerDashboard />;
+    case "user":
+      return <UserDashboard />;
+    default:
+      return <UserDashboard />;
+  }
+};
+
+export default Dashboard;

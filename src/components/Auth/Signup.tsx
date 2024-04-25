@@ -12,14 +12,14 @@ const Signup = () => {
   const [signupSuccess, setSignupSuccess] = useState(false);
   const [isLoading, setIsloading] = useState(false);
   const navigate = useNavigate();
-const [activeUser ,setActiveUser] = useState("user")
-
+  const [activeUser, setActiveUser] = useState("user");
 
   interface SignupType {
     confirmPassword: string;
     email: string;
     password: string;
     username: string;
+    department: string;
   }
 
   const SingupSchema = z
@@ -27,12 +27,19 @@ const [activeUser ,setActiveUser] = useState("user")
       firstName: z
         .string()
         .min(2, { message: "Enter atleast 2 character" })
+        .toLowerCase()
         .trim(),
       lastName: z
         .string()
         .min(2, { message: "Enter atleast 2 character" })
+        .toLowerCase()
         .trim(),
       email: z.string().email({ message: "Please enter correct email" }).trim(),
+      department: z
+        .string()
+        .min(2, { message: "Please select any option" })
+        .toLowerCase()
+        .trim(),
       password: z
         .string()
         .min(3, { message: "Username must be at least 4 characters long" })
@@ -64,29 +71,39 @@ const [activeUser ,setActiveUser] = useState("user")
     setPasswordShow(!passwordShow);
   };
 
-  const singupFormSubmit = async ({ firstName, lastName, email, password }) => {
+  const singupFormSubmit = async ({
+    firstName,
+    lastName,
+    email,
+    password,
+    department,
+    }) => {
     const username = `${firstName} ${lastName}`;
 
-    const formData = { username, email, password, role: activeUser };
+    const formData = {
+      username,
+      email,
+      password,
+      role: activeUser,
+      department,
+    };
 
+    console.log("formData" ,formData)
     const signupApiCall = await signupService(formData);
     let message = signupApiCall?.response?.data?.message;
     if (signupApiCall.status === true) {
       toast.success("User created successfully , Now please login");
-      reset()
-      //  navigate("/login")
+      reset();
     }
 
     toast.error(message);
 
-    console.log("signupApiCall", signupApiCall);
   };
 
-
   const selectActiveUser = (signupType) => {
-    setActiveUser(signupType)
-console.log("type",signupType)
-  }
+    setActiveUser(signupType);
+    console.log("type", signupType);
+  };
 
   return (
     <section className="bg-white dark:bg-gray-900">
@@ -120,7 +137,14 @@ console.log("type",signupType)
               </h1>
 
               <div className="mt-3 md:flex md:items-center md:-mx-2">
-                <button onClick={() => selectActiveUser("user")} className={`flex justify-center  w-full px-6 py-3 ${activeUser === "user" ? "text-white  bg-indigo-600" : "text-indigo-500 border border-indigo-500"}  rounded-md md:w-auto md:mx-2 focus:outline-none `}>
+                <button
+                  onClick={() => selectActiveUser("user")}
+                  className={`flex justify-center  w-full px-6 py-3 ${
+                    activeUser === "user"
+                      ? "text-white  bg-indigo-600"
+                      : "text-indigo-500 border border-indigo-500"
+                  }  rounded-md md:w-auto md:mx-2 focus:outline-none `}
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="w-6 h-6"
@@ -139,7 +163,14 @@ console.log("type",signupType)
                   <span className="mx-2">User</span>
                 </button>
 
-                         <button onClick={() => selectActiveUser("manager")} className={`flex justify-center  w-full px-6 py-3 ${activeUser === "manager" ? "text-white  bg-indigo-600" : "text-indigo-500 border border-indigo-500"}  rounded-md md:w-auto md:mx-2 focus:outline-none `}>
+                <button
+                  onClick={() => selectActiveUser("manager")}
+                  className={`flex justify-center  w-full px-6 py-3 ${
+                    activeUser === "manager"
+                      ? "text-white  bg-indigo-600"
+                      : "text-indigo-500 border border-indigo-500"
+                  }  rounded-md md:w-auto md:mx-2 focus:outline-none `}
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="w-6 h-6"
@@ -157,7 +188,14 @@ console.log("type",signupType)
 
                   <span className="mx-2">Manager</span>
                 </button>
-                <button onClick={() => selectActiveUser("admin")} className={`flex justify-center  w-full px-6 py-3 ${activeUser === "admin" ? "text-white  bg-indigo-600" : "text-indigo-500 border border-indigo-500"}  rounded-md md:w-auto md:mx-2 focus:outline-none `}>
+                <button
+                  onClick={() => selectActiveUser("admin")}
+                  className={`flex justify-center  w-full px-6 py-3 ${
+                    activeUser === "admin"
+                      ? "text-white  bg-indigo-600"
+                      : "text-indigo-500 border border-indigo-500"
+                  }  rounded-md md:w-auto md:mx-2 focus:outline-none `}
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="w-6 h-6"
@@ -227,6 +265,34 @@ console.log("type",signupType)
                   {errors?.email?.message}{" "}
                 </span>
               </div>
+              <div>
+                <label className="block mb-2 text-sm font-semibold text-start text-gray-600 dark:text-gray-200">
+                  Department
+                </label>
+                <select
+                  className="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-md dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-indigo-400 dark:focus:border-indigo-400 focus:ring-indigo-400 focus:outline-none focus:ring focus:ring-opacity-40"
+                  {...register("department")}
+                >
+                  <option value="">--Please choose a Department--</option>
+                  {activeUser !== "user" ? (
+                    <>
+                      <option value="administrator">Administrator</option>
+                      <option value="finance">Finance</option>
+                      <option value="maintenance">Maintenance</option>
+                      <option value="public">Public</option>
+                    </>
+                  ) : (
+                    <>
+                  
+                      <option value="public">Public</option>
+                    </>
+                  )}
+                </select>
+
+                <span className="text-sm text-red-700">
+                  {errors?.department?.message}{" "}
+                </span>
+              </div>
 
               <div>
                 <label className="block mb-2 text-sm font-semibold text-start text-gray-600 dark:text-gray-200">
@@ -284,7 +350,6 @@ console.log("type",signupType)
                   {errors.confirmPassword?.message}{" "}
                 </span>
               </div>
-              <br />
 
               <button
                 type="submit"

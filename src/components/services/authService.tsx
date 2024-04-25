@@ -10,18 +10,11 @@ export const loginService = async ({ email, password, role }: loginType) => {
   try {
     const userData = { email, password, role };
 
-    // const loginResponse = await axios.post(
-    //   "http://localhost:5001/auth/login",
-    //   userData,
-    // );
-
     const loginResponse = await axios("http://localhost:5001/auth/login", {
       method: "post",
       data: userData,
       withCredentials: true,
     });
-
-    console.log("loginResponse", loginResponse);
 
     if (loginResponse.status === 200) {
       return loginResponse;
@@ -37,6 +30,7 @@ interface signupType {
   email: string;
   password: string;
   role: string;
+  department:string
 }
 
 export const signupService = async ({
@@ -44,9 +38,10 @@ export const signupService = async ({
   email,
   password,
   role,
+  department
 }: signupType) => {
   try {
-    const userData = { username, email, password, role };
+    const userData = { username, email, password, role ,department};
 
     const signUpresposne = await axios.post(
       "http://localhost:5001/auth/signup",
@@ -73,3 +68,4 @@ export const logoutService = async () => {
     return error;
   }
 };
+

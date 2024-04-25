@@ -26,7 +26,9 @@ const formValidationMiddleware = [
 // ********** Signup Api router **********
 router.post("/signup", formValidationMiddleware, async (req, res) => {
   try {
-    let { username, password, email,role } = req.body;
+    const { username, password, email, role, department } = req.body;
+
+    console.log("department", req.body);
 
     // Validate input data using the defined formValidationMiddleware
     const validationErrors = validationResult(req);
@@ -50,7 +52,13 @@ router.post("/signup", formValidationMiddleware, async (req, res) => {
     const hashPassword = await bcryptjs.hash(password, salt);
 
     // Create a new user object with hashed password and save it to the database
-    const newUser = new User({ username, email, password: hashPassword ,role});
+    const newUser = new User({
+      username,
+      email,
+      password: hashPassword,
+      role,
+      department,
+    });
     const savedUser = await newUser.save();
 
     // Send verification email to the user
@@ -73,7 +81,7 @@ router.post("/signup", formValidationMiddleware, async (req, res) => {
 // ********** Login endpoint **********
 router.post("/login", formValidationMiddleware, async (req, res) => {
   try {
-    const { email, password ,role} = req.body;
+    const { email, password, role } = req.body;
     const validationErrors = validationResult(req);
 
     // Validate input data using the defined formValidationMiddleware
@@ -112,7 +120,7 @@ router.post("/login", formValidationMiddleware, async (req, res) => {
       });
     }
 
-    if(userExists.role !== role){
+    if (userExists.role !== role) {
       return res.status(400).json({
         message: "User role does not match",
         status: false,
@@ -124,6 +132,7 @@ router.post("/login", formValidationMiddleware, async (req, res) => {
       id: userExists._id,
       email: userExists.email,
       password: userExists.password,
+      department: userExists.department,
     };
     const token = await jwt.sign(tokenData, process.env.TOKEN_SECRET, {
       expiresIn: "1d",
@@ -131,18 +140,19 @@ router.post("/login", formValidationMiddleware, async (req, res) => {
 
     // Set token in a cookie and send response
     res.cookie("token", token, {
-      httpOnly: true,
+      // httpOnly: true,
     });
 
     return res.status(200).json({
       message: "Login Successfully",
       status: true,
-    user:{
-      email: userExists.email,
-      isVerified: userExists.isVerified,
-      role:userExists.role,
-      username:userExists.username
-    }
+      user: {
+        email: userExists.email,
+        isVerified: userExists.isVerified,
+        role: userExists.role,
+        username: userExists.username,
+        department: userExists.department,
+      },
     });
   } catch (error) {
     console.error("Error while signing up:", error);
@@ -180,14 +190,14 @@ router.post("/verifyemail", async (req, res) => {
     return res.status(200).json({
       message: "Email verified successfully",
       status: true,
-      code:201
+      code: 201,
     });
   } catch (error) {
     console.log(error.message);
     res.status(500).json({
       message: "Something went wrong. Please try again later.",
       status: false,
-      code:500
+      code: 500,
     });
   }
 });
