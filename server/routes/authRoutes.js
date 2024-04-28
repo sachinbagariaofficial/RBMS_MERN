@@ -4,6 +4,7 @@ const { body, validationResult } = require("express-validator");
 const User = require("../models/userModel");
 const bcryptjs = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const generateRefreshToken = require("../utils/generateRefreshToken");
 // const sendEmail = require("../helper/sendEmail");
 
 // ********** Middleware for form validation using express-validator **********
@@ -82,6 +83,10 @@ router.post("/signup", formValidationMiddleware, async (req, res) => {
 router.post("/login", formValidationMiddleware, async (req, res) => {
   try {
     const { email, password, role } = req.body;
+    const data = await req.user;
+
+    console.log("data" ,data)
+
     const validationErrors = validationResult(req);
 
     // Validate input data using the defined formValidationMiddleware
@@ -133,14 +138,22 @@ router.post("/login", formValidationMiddleware, async (req, res) => {
       email: userExists.email,
       password: userExists.password,
       department: userExists.department,
+      tokenExp:Math.floor(Date.now() / 1000) + 60 * 60 * 9,
+      role:userExists.role
     };
     const token = await jwt.sign(tokenData, process.env.TOKEN_SECRET, {
-      expiresIn: "1d",
+      expiresIn: "9hr",
     });
+    const refreshToken = await generateRefreshToken(userExists._id)
 
     // Set token in a cookie and send response
     res.cookie("token", token, {
       // httpOnly: true,
+   
+    });
+    res.cookie("refreshToken", refreshToken, {
+      // httpOnly: true,
+   
     });
 
     return res.status(200).json({
@@ -152,6 +165,7 @@ router.post("/login", formValidationMiddleware, async (req, res) => {
         role: userExists.role,
         username: userExists.username,
         department: userExists.department,
+        tokenExpiry:tokenData.tokenExp,
       },
     });
   } catch (error) {
@@ -162,6 +176,8 @@ router.post("/login", formValidationMiddleware, async (req, res) => {
     });
   }
 });
+
+
 
 // ********** Endpoint for verifying email **********
 router.post("/verifyemail", async (req, res) => {
@@ -222,5 +238,7 @@ router.get("/logout", async (req, res) => {
     });
   }
 });
+
+
 
 module.exports = router;

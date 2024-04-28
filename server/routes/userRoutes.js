@@ -10,7 +10,7 @@ router.get("/users", async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 5;
 
-    let userRoleList, totalUsers, nextPage, nextPageNumber ,totalPage;
+    let userRoleList, totalUsers, nextPage, nextPageNumber ,totalPage ,currentPage;
 
     const query = {}; 
     query.role = role;
@@ -48,8 +48,9 @@ router.get("/users", async (req, res) => {
       message: "Here is list of users",
       nextPage,
       nextPageNumber,
-      totalUsers,
-      totalPage
+      // totalUsers,
+      totalPage,
+      currentPage:page
     });
   } catch (error) {
     console.log(error.message);
@@ -63,7 +64,14 @@ router.post("/createNewRole", async (req, res) => {
   try {
     const { username, email, role, department } = req.body;
 
-    console.log("department", req.body);
+    const requestingUserRole = req.user.role;
+   
+    if (requestingUserRole !== "admin" && requestingUserRole !== "manager") {
+      return res.status(403).json({
+        message: "Unauthorized: You don't have permission to delete users.",
+        status: false,
+      });
+    }
 
     // Check if user with the same email already exists
     const userExists = await User.findOne({ email });
@@ -121,6 +129,14 @@ console.log("_id" ,_id)
       });
     }
     
+    const requestingUserRole = req.user.role;
+   
+    if (requestingUserRole !== "admin" && requestingUserRole !== "manager") {
+      return res.status(403).json({
+        message: "Unauthorized: You don't have permission to delete users.",
+        status: false,
+      });
+    }
 
     // Check if user with the same email already exists
     const deletedRole = await User.findByIdAndDelete(_id);;

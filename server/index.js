@@ -4,7 +4,8 @@ const app = express();
 require("dotenv").config();
 const connectDB = require("./dbConfig/dbConnect")
 const authRoutes = require("./routes/authRoutes");
-const userRoutes = require("./routes/userRoutes")
+const userRoutes = require("./routes/userRoutes");
+const verifyJWT = require("./middleware/verifyJWT");
 
 
 app.use(cors({ credentials: true, origin: true }));
@@ -14,7 +15,7 @@ connectDB()
 
 
 app.use("/auth", authRoutes);
-app.use("/api", userRoutes);
+app.use("/api",verifyJWT, userRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running on ${port} port`);

@@ -9,6 +9,7 @@ export const UserInfoInitialState = {
 
 
 export const UserInfoReducer = (state, actions) => {
+    console.log("actions.payload" ,actions.payload)
     switch (actions.type) {
         case USER_INFO.ADD_USER:
             return {

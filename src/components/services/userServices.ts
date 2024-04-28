@@ -1,5 +1,5 @@
 import axios from "axios";
-
+import Cookies from "js-cookie";
 interface userType {
   limit?: number;
   page?: number;
@@ -15,14 +15,23 @@ interface createNewRoleType {
   _id:string
 }
 
+
+
+
 export const allUserService = async ({ role, page, limit,department }: userType) => {
   try {
+    const token = await Cookies.get("token");
 
-console.log("department",department)
     const apiRes = await axios(`http://localhost:5001/api/users?role=${role}&department=${department}&page=${page}&limit=${limit}`, {
       method: "get",
       withCredentials: true,
+      headers:{
+        'Content-Type': 'application/json',
+        "Authorization":`Bearer ${token}`
+      }
     });
+
+    console.log("apiRes" ,apiRes)
     if (apiRes.status !== 200) {
       throw new Error("There is an error while fetching the data")
     }
@@ -43,11 +52,20 @@ export const createNewRoleService = async ({
   department
 }: createNewRoleType) => {
   try {
+    const token = await Cookies.get("token");
     const userData = { username, email, role, department };
 
     const signUpresposne = await axios.post(
       "http://localhost:5001/api/createNewRole",
-      userData
+    
+      userData,
+      {
+        headers:{
+          'Content-Type': 'application/json',
+          "Authorization":`Bearer ${token}`
+        }
+      }
+     
     );
 
     if (signUpresposne.data.status === false) {
@@ -64,9 +82,16 @@ export const deleteRoleService = async (
   _id
 ) => {
   try {
+    const token = await Cookies.get("token");
     const deleteResposne = await axios.post(
       "http://localhost:5001/api/deleteRole",
-      { _id }
+      { _id },
+      {
+        headers:{
+          'Content-Type': 'application/json',
+          "Authorization":`Bearer ${token}`
+        }
+      }
     );
 
     console.log("deleteResposne", deleteResposne)
@@ -87,11 +112,18 @@ export const editExistsRole = async ({
   department
 }: createNewRoleType) => {
   try {
+    const token = await Cookies.get("token");
     const userData = { username, _id, department };
 
     const resposne = await axios.post(
       "http://localhost:5001/api/editExistsRole",
-      userData
+      userData,
+      {
+        headers:{
+          'Content-Type': 'application/json',
+          "Authorization":`Bearer ${token}`
+        }
+      }
     );
 
     if (resposne.data.status === false) {

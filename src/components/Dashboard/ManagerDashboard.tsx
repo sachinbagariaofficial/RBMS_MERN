@@ -1,46 +1,44 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import Table from "../utils/Table.tsx";
-import { allUserService, createNewRoleService, deleteRoleService, editExistsRole } from "../services/userServices.ts";
+import {
+  allUserService,
+  createNewRoleService,
+  deleteRoleService,
+  editExistsRole,
+} from "../services/userServices.ts";
 import PopupForm from "../utils/PopupForm.tsx";
 import { UserInfoContext } from "../Contexts/UserInfoContext.tsx";
 
 const ManagerDashboard = () => {
   const [isOpen, setIsOpen] = useState(false);
- 
+
   const [userList, setUserList] = useState([]);
   const [formRole, setFormRole] = useState("");
   const [userRoleStatus, setUserRoleStatus] = useState(false);
-  const [editFormData , setEditFormData] = useState(null)
-
+  const [editFormData, setEditFormData] = useState(null);
+  const [activePageNum, setActivePageNum] = useState(1);
   const { userInfoState } = useContext(UserInfoContext);
 
   const department = userInfoState?.UserInfo?.department;
 
-
-  console.log("userData",department)
-
-  const fetchUserType = useCallback(async (role) => {
-    const UserService = await allUserService({ role ,department});
-
+  const fetchUserType = useCallback(async (role, page) => {
+    const UserService = await allUserService({ role, page, department });
+    console.log("UserService", UserService);
     if (UserService.status === 200) {
-      setUserList(UserService?.data?.userRoleList);
+      setUserList(UserService?.data);
     } else {
-      console.log("there is an erro ");
+      console.log("there is an error ");
     }
   }, []);
   const toggleModal = (role) => {
-    setEditFormData(null)
+    setEditFormData(null);
     setIsOpen(!isOpen);
-    if(role.length){
-      console.log("$$$$$$$$$" ,role.length,role)
+    if (role.length) {
       setFormRole("");
     }
     setFormRole(role);
- 
   };
-
-
 
   const createNewRole = async (formData) => {
     const signupApiCall = await createNewRoleService(formData);
@@ -56,9 +54,8 @@ const ManagerDashboard = () => {
   };
 
   const updateRole = async (formData) => {
-    console.log("formData", formData);
     const updateResponse = await editExistsRole(formData);
-    console.log("updateResponse", updateResponse);
+
     let message = updateResponse?.response?.data?.message;
     if (updateResponse.status === true) {
       setEditFormData(null);
@@ -76,26 +73,29 @@ const ManagerDashboard = () => {
     if (resposne.status) {
       toast.success("User Sucessfully Deleted");
 
-    
-         setUserRoleStatus(!userRoleStatus);
+      setUserRoleStatus(!userRoleStatus);
     } else {
       toast.error("Error while deleting the role");
     }
   };
 
   const editRole = async (data) => {
-  setIsOpen(!isOpen)
-  setEditFormData(data)
-  setFormRole(data?.role);
+    setIsOpen(!isOpen);
+    setEditFormData(data);
+    setFormRole(data?.role);
   };
 
   useEffect(() => {
-    fetchUserType("user");
+    fetchUserType("user", activePageNum);
   }, [userRoleStatus]);
 
+  const requestPageNum = (num, requestRole) => {
+    fetchUserType("user", num);
+  };
+
   return (
-  <>
-   <ToastContainer />
+    <>
+      <ToastContainer />
       <div>
         <Table
           list={userList}
@@ -103,6 +103,7 @@ const ManagerDashboard = () => {
           userType="user"
           deleteRole={deleteRole}
           editRole={editRole}
+          requestPageNum={requestPageNum}
         />
       </div>
 
@@ -117,7 +118,7 @@ const ManagerDashboard = () => {
           />
         )}
       </div>
-  </>
+    </>
   );
 };
 

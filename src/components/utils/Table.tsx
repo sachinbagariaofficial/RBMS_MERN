@@ -8,9 +8,10 @@ interface ListType {
     email: string;
   }
 
-const Table = ({list,toggleModal , userType,deleteRole,editRole}) => {
+const Table = ({list,toggleModal , userType,deleteRole,editRole,requestPageNum}) => {
 
 
+const {userRoleList ,nextPageNumber ,totalPage,nextPage,currentPage } = list;
 
   return (
     <>
@@ -55,9 +56,10 @@ const Table = ({list,toggleModal , userType,deleteRole,editRole}) => {
             ></th>
           </tr>
         </thead>
+      
         <tbody className="divide-y divide-gray-100 border-t border-gray-100">
-          {list?.length
-            ? list.map((data: ListType) => {
+         
+        {userRoleList?.length >0 && userRoleList.map((data: ListType) => {
                 return (
                   <tr className="hover:bg-gray-50" key={data._id}>
                     <th className="flex gap-3 px-6 py-4 font-normal text-gray-900">
@@ -71,7 +73,7 @@ const Table = ({list,toggleModal , userType,deleteRole,editRole}) => {
                       </div>
                       <div className="text-sm">
                         <div className="font-medium text-gray-700">
-                          {data?.username}
+                          {data?.username} 
                         </div>
                         <div className="text-gray-400">{data?.email}</div>
                       </div>
@@ -134,12 +136,17 @@ const Table = ({list,toggleModal , userType,deleteRole,editRole}) => {
                     </td>
                   </tr>
                 );
-              })
-            : null}
-        </tbody>
+              }) }
+        </tbody> 
       </table>
+     {
+      userRoleList?.length === 0 || !userRoleList  &&   <p className='px-6 py-4 font-medium text-gray-900 text-center ' >NO DATA </p>
+     } 
     </div>
-    <Pagination />
+    {
+       userRoleList?.length > 0  &&   <Pagination nextPageNumber={nextPageNumber} totalPage={totalPage} nextPage={nextPage} currentPage={currentPage} requestPageNum={requestPageNum} userType={userType} />
+     } 
+   
   </>
   )
 }

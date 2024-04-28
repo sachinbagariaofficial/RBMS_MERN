@@ -19,27 +19,28 @@ const AdminDashboard = () => {
   const [userRoleStatus, setUserRoleStatus] = useState(false);
   const [managerRoleStatus, setManagerRoleStatus] = useState(false);
   const [editFormData, setEditFormData] = useState(null);
+const [activePageNum , setActivePageNum] = useState(1);
 
-  const fetchUserType = useCallback(async (role) => {
-    const UserService = await allUserService({ role });
-console.log("UserService" ,UserService)
+
+  const fetchUserType = useCallback(async (role,page) => {
+    const UserService = await allUserService({ role ,page});
     if (UserService.status === 200) {
       if (role === "manager") {
-        setManagerList(UserService?.data?.userRoleList);
+        setManagerList(UserService?.data);
       } else if (role === "user") {
-        setUserList(UserService?.data?.userRoleList);
+        setUserList(UserService?.data);
       }
     } else {
-      console.log("there is an erro ");
+      console.log("there is an error ");
     }
   }, []);
 
   useEffect(() => {
-    fetchUserType("user");
+    fetchUserType("user",activePageNum);
   }, [userRoleStatus]);
 
   useEffect(() => {
-    fetchUserType("manager");
+    fetchUserType("manager",activePageNum);
   }, [managerRoleStatus]);
 
   const toggleModal = (role) => {
@@ -104,6 +105,18 @@ console.log("UserService" ,UserService)
     setFormRole(data?.role);
   };
 
+  const requestPageNum = (num , requestRole) => {
+    
+      if(requestRole === "manager"){
+        fetchUserType("manager",num);
+      }
+      else{
+        fetchUserType("user",num);
+      }
+  
+console.log("num" , num , requestRole)
+  }
+
   return (
     <>
       <ToastContainer />
@@ -114,6 +127,7 @@ console.log("UserService" ,UserService)
           userType="manager"
           deleteRole={deleteRole}
           editRole={editRole}
+          requestPageNum={requestPageNum}
         />
       </div>
 
@@ -124,6 +138,7 @@ console.log("UserService" ,UserService)
           userType="user"
           deleteRole={deleteRole}
           editRole={editRole}
+          requestPageNum={requestPageNum}
         />
       </div>
 

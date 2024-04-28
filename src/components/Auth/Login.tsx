@@ -43,6 +43,7 @@ const Login = () => {
     let errorMessage = loginApiResponse?.response?.data?.message;
 
     if (loginApiResponse.status === 200) {
+      console.log("#####",loginApiResponse?.data)
       AddUserInfo(loginApiResponse?.data?.user);
       toast.success("Login successful!");
       Navigate("/");
