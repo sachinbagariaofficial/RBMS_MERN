@@ -13,6 +13,7 @@ const Table = ({list,toggleModal , userType,deleteRole,editRole,requestPageNum})
 
 const {userRoleList ,nextPageNumber ,totalPage,nextPage,currentPage } = list;
 
+console.log("userRoleList?.length === 0 || !userRoleList",userRoleList?.length === 0 || !userRoleList)
   return (
     <>
     <div className="rounded-lg  m-5">
@@ -140,7 +141,7 @@ const {userRoleList ,nextPageNumber ,totalPage,nextPage,currentPage } = list;
         </tbody> 
       </table>
      {
-      userRoleList?.length === 0 || !userRoleList  &&   <p className='px-6 py-4 font-medium text-gray-900 text-center ' >NO DATA </p>
+      userRoleList?.length === 0 || !userRoleList  ?   <p className='px-6 py-4 font-medium text-gray-900 text-center ' >NO DATA </p> : null
      } 
     </div>
     {
