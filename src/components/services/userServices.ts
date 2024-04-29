@@ -4,7 +4,7 @@ interface userType {
   limit?: number;
   page?: number;
   role?: string;
-  department?:string
+  department?: string
 }
 
 interface createNewRoleType {
@@ -12,26 +12,26 @@ interface createNewRoleType {
   email: string;
   role: string;
   department: string
-  _id:string
+  _id: string
 }
 
 
 
 
-export const allUserService = async ({ role, page, limit,department }: userType) => {
+export const allUserService = async ({ role, page, limit, department }: userType) => {
   try {
     const token = await Cookies.get("token");
 
     const apiRes = await axios(`http://localhost:5001/api/users?role=${role}&department=${department}&page=${page}&limit=${limit}`, {
       method: "get",
       withCredentials: true,
-      headers:{
+      headers: {
         'Content-Type': 'application/json',
-        "Authorization":`Bearer ${token}`
+        "Authorization": `Bearer ${token}`
       }
     });
 
-    console.log("apiRes" ,apiRes)
+    console.log("apiRes", apiRes)
     if (apiRes.status !== 200) {
       throw new Error("There is an error while fetching the data")
     }
@@ -57,15 +57,15 @@ export const createNewRoleService = async ({
 
     const signUpresposne = await axios.post(
       "http://localhost:5001/api/createNewRole",
-    
+
       userData,
       {
-        headers:{
+        headers: {
           'Content-Type': 'application/json',
-          "Authorization":`Bearer ${token}`
+          "Authorization": `Bearer ${token}`
         }
       }
-     
+
     );
 
     if (signUpresposne.data.status === false) {
@@ -83,18 +83,16 @@ export const deleteRoleService = async (
 ) => {
   try {
     const token = await Cookies.get("token");
-    const deleteResposne = await axios.post(
-      "http://localhost:5001/api/deleteRole",
-      { _id },
-      {
-        headers:{
-          'Content-Type': 'application/json',
-          "Authorization":`Bearer ${token}`
-        }
-      }
-    );
+    const deleteResposne = await axios.delete(
+      `http://localhost:5001/api/deleteRole?id=${_id}`,
 
-    console.log("deleteResposne", deleteResposne)
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          "Authorization": `Bearer ${token}`
+        }
+      },
+    );
 
     if (deleteResposne.data.status === false) {
       throw new Error(deleteResposne.data);
@@ -108,20 +106,20 @@ export const deleteRoleService = async (
 
 export const editExistsRole = async ({
   username,
- _id,
+  _id,
   department
 }: createNewRoleType) => {
   try {
     const token = await Cookies.get("token");
     const userData = { username, _id, department };
 
-    const resposne = await axios.post(
+    const resposne = await axios.patch(
       "http://localhost:5001/api/editExistsRole",
       userData,
       {
-        headers:{
+        headers: {
           'Content-Type': 'application/json',
-          "Authorization":`Bearer ${token}`
+          "Authorization": `Bearer ${token}`
         }
       }
     );

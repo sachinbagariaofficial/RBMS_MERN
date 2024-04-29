@@ -10,14 +10,19 @@ router.get("/users", async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 5;
 
-    let userRoleList, totalUsers, nextPage, nextPageNumber ,totalPage ,currentPage;
+    let userRoleList,
+      totalUsers,
+      nextPage,
+      nextPageNumber,
+      totalPage,
+      currentPage;
 
-    const query = {}; 
+    const query = {};
     query.role = role;
-    if(department !== "undefined"){
+    if (department !== "undefined") {
       query.department = department;
     }
-   
+
     switch (role) {
       case "admin":
       case "manager":
@@ -37,7 +42,7 @@ router.get("/users", async (req, res) => {
       totalUsers = userRoleList.length;
     }
 
- nextPage = totalUsers > page * limit;
+    nextPage = totalUsers > page * limit;
 
     nextPageNumber = nextPage ? page + 1 : null;
 
@@ -50,7 +55,7 @@ router.get("/users", async (req, res) => {
       nextPageNumber,
       // totalUsers,
       totalPage,
-      currentPage:page
+      currentPage: page,
     });
   } catch (error) {
     console.log(error.message);
@@ -65,7 +70,7 @@ router.post("/createNewRole", async (req, res) => {
     const { username, email, role, department } = req.body;
 
     const requestingUserRole = req.user.role;
-   
+
     if (requestingUserRole !== "admin" && requestingUserRole !== "manager") {
       return res.status(403).json({
         message: "Unauthorized: You don't have permission to delete users.",
@@ -114,23 +119,19 @@ router.post("/createNewRole", async (req, res) => {
   }
 });
 
-
-
-router.post("/deleteRole" , async (req, res) => {
-
-
+router.delete("/deleteRole", async (req, res) => {
   try {
-    const { _id } = req.body;
-console.log("_id" ,_id)
-    if(!_id){
+    const  _id  = req.query.id;
+    console.log("_id", _id);
+    if (!_id) {
       return res.status(400).json({
         message: "Missing required field: 'id'",
         status: false,
       });
     }
-    
+
     const requestingUserRole = req.user.role;
-   
+
     if (requestingUserRole !== "admin" && requestingUserRole !== "manager") {
       return res.status(403).json({
         message: "Unauthorized: You don't have permission to delete users.",
@@ -139,9 +140,9 @@ console.log("_id" ,_id)
     }
 
     // Check if user with the same email already exists
-    const deletedRole = await User.findByIdAndDelete(_id);;
+    const deletedRole = await User.findByIdAndDelete(_id);
 
-    console.log("deletedRole" ,deletedRole)
+    console.log("deletedRole", deletedRole);
 
     if (!deletedRole) {
       return res.status(404).json({
@@ -149,7 +150,7 @@ console.log("_id" ,_id)
         status: false,
       });
     }
-  
+
     return res.status(200).json({
       message: "Role successfully deleted.",
       status: true,
@@ -159,40 +160,42 @@ console.log("_id" ,_id)
     return res.status(500).json({
       message: "Something went wrong. Please try again later.",
       status: false,
-    })}
-
+    });
+  }
 });
 
-
-
-router.post("/editExistsRole", async (req, res) => {
+router.patch("/editExistsRole", async (req, res) => {
   try {
-    const { username,  department ,_id } = req.body;
-
+    const { username, department, _id } = req.body;
 
     if (!username || !department || !_id) {
       return res.status(400).json({
-        message: "Missing required fields (username, department, and ID) in request body.",
+        message:
+          "Missing required fields (username, department, and ID) in request body.",
         status: false,
       });
     }
 
-  const updatedUser= await User.findByIdAndUpdate(_id , {
-    username,
-    department
-  },{new:true});
+    const updatedUser = await User.findByIdAndUpdate(
+      _id,
+      {
+        username,
+        department,
+      },
+      { new: true }
+    );
 
-  if(!updatedUser){
-    return res.status(404).json({
-      message: "User not found. Please check the provided ID.",
-      status: false,
+    if (!updatedUser) {
+      return res.status(404).json({
+        message: "User not found. Please check the provided ID.",
+        status: false,
+      });
+    }
+
+    return res.status(200).json({
+      message: "User updated successfully.",
+      status: true,
     });
-  }
-
-  return res.status(200).json({
-    message: "User updated successfully.",
-    status: true,
-  });
   } catch (error) {
     console.error("Error while updating:", error);
     return res.status(500).json({
@@ -201,6 +204,5 @@ router.post("/editExistsRole", async (req, res) => {
     });
   }
 });
-
 
 module.exports = router;
