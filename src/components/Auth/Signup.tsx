@@ -139,7 +139,7 @@ const Signup = () => {
               <div className="mt-3 md:flex md:items-center md:-mx-2">
                 <button
                   onClick={() => selectActiveUser("user")}
-                  className={`flex justify-center  w-full px-6 py-3 ${
+                  className={`flex justify-center  w-full px-6 py-3 m-2 ${
                     activeUser === "user"
                       ? "text-white  bg-indigo-600"
                       : "text-indigo-500 border border-indigo-500"
@@ -165,7 +165,7 @@ const Signup = () => {
 
                 <button
                   onClick={() => selectActiveUser("manager")}
-                  className={`flex justify-center  w-full px-6 py-3 ${
+                  className={`flex justify-center  w-full px-6 py-3 m-2 ${
                     activeUser === "manager"
                       ? "text-white  bg-indigo-600"
                       : "text-indigo-500 border border-indigo-500"
@@ -190,7 +190,7 @@ const Signup = () => {
                 </button>
                 <button
                   onClick={() => selectActiveUser("admin")}
-                  className={`flex justify-center  w-full px-6 py-3 ${
+                  className={`flex justify-center  w-full px-6 py-3 m-2 ${
                     activeUser === "admin"
                       ? "text-white  bg-indigo-600"
                       : "text-indigo-500 border border-indigo-500"
